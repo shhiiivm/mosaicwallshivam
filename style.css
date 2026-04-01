@@ -33,6 +33,11 @@ body {
     align-items: center;
 }
 
+#intro-overlay {
+    display: none;
+    /* Removed global overlay in favor of cell-based reveal */
+}
+
 /* 
     Canvas Core 
     Maintain 1920x1080 Aspect Ratio (16:9) 
@@ -43,16 +48,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #000;
+    background: #ffffff; /* Matches intro white */
 }
 
 #mosaic-canvas {
     width: 1920px;
     height: 1080px;
     position: relative;
-    background: #111;
+    background: #ffffff; /* Matches intro white */
     overflow: hidden;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
     /* Scaling logic will be handled in JS */
 }
 
@@ -66,6 +71,9 @@ body {
     background-size: cover;
     background-position: center;
     z-index: 1;
+    opacity: 1;
+    /* Background is now always present but hidden by white grid slots */
+    transform: scale(1);
 }
 
 /* Grid Layer */
@@ -77,7 +85,25 @@ body {
     height: 100%;
     z-index: 2;
     display: grid;
+    grid-gap: 0;
+    gap: 0;
     /* Grid-template will be set dynamically via JS */
+}
+
+.grid-slot {
+    background: #ffffff; 
+    /* Initial white state for every cell */
+    transition: background 1s ease;
+    /* Eliminate sub-pixel gaps by adding a 1px solid spread shadow */
+    box-shadow: 0 0 0 1px #ffffff;
+    position: relative;
+}
+
+.grid-slot.filled {
+    background: transparent; 
+    /* Reveals the background through this slot */
+    box-shadow: none; 
+    /* Remove overlap once revealed */
 }
 
 .mosaic-item {
@@ -91,7 +117,7 @@ body {
 /* Hero Entrance Animation for new images */
 .mosaic-item-entrance {
     position: absolute;
-    z-index: 9999;
+    z-index: 1000005;
     object-fit: cover;
     pointer-events: none;
     box-shadow: 0 0 100px rgba(0, 0, 0, 0.8);
@@ -122,7 +148,8 @@ body {
     position: fixed;
     top: 2rem;
     right: 2rem;
-    z-index: 1000;
+    z-index: 2000000;
+    /* Higher than intro-overlay (999999) */
 }
 
 #settings-btn {
@@ -157,7 +184,8 @@ body {
     inset: 0;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(8px);
-    z-index: 2000;
+    z-index: 2000005;
+    /* Higher than ui-overlay (2000000) */
     display: flex;
     justify-content: center;
     align-items: center;

@@ -472,6 +472,7 @@ class MosaicWall {
         cell.innerHTML = '';
         cell.dataset.pid = id;
         cell.dataset.url = url;
+        cell.classList.add('filled'); // Removes the white background for this cell
         cell.appendChild(finalImg);
 
         // RELEASE THE STAGE:
@@ -543,6 +544,7 @@ class MosaicWall {
 
             img.onload = () => {
                 cell.dataset.url = imageUrl;
+                cell.classList.add('filled'); // Also reveal for manual fill
                 cell.appendChild(img);
             };
             filledCount++;
