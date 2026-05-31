@@ -333,7 +333,8 @@ class MosaicWall {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || `Server error ${response.status}`);
+                const errMsg = errorData.details ? JSON.stringify(errorData.details) : errorData.error;
+                throw new Error(errMsg || `Server error ${response.status}`);
             }
 
             const data = await response.json();

@@ -1,7 +1,4 @@
-const axios = require('axios');
-
 exports.handler = async (event, context) => {
-    // Only allow POST
     if (event.httpMethod !== "POST") {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
@@ -19,27 +16,39 @@ exports.handler = async (event, context) => {
         const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
         const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/search`;
 
-        const response = await axios.post(url, {
-            expression,
-            sort_by: [{ created_at: 'desc' }],
-            max_results: 50
-        }, {
+        const response = await fetch(url, {
+            method: 'POST',
             headers: {
                 'Authorization': `Basic ${auth}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                expression: expression || 'resource_type:image',
+                sort_by: [{ created_at: 'desc' }],
+                max_results: 50
+            })
         });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Cloudinary API Error:", data);
+            return {
+                statusCode: response.status,
+                body: JSON.stringify({ error: "Cloudinary API Error", details: data })
+            };
+        }
 
         return {
             statusCode: 200,
-            body: JSON.stringify(response.data)
+            body: JSON.stringify(data)
         };
 
     } catch (err) {
-        console.error("Cloudinary Search Error:", err.message);
+        console.error("Proxy Execution Error:", err.message);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Cloudinary Search Failed", details: err.message })
+            body: JSON.stringify({ error: "Proxy Execution Failed", details: err.message })
         };
     }
 };
