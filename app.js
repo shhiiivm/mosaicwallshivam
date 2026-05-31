@@ -22,7 +22,7 @@ class MosaicWall {
             apiKey: '',
             apiSecret: '',
             folderPath: '',
-            pollInterval: 8
+            pollInterval: 30
         };
 
         this.isZenMode = false;
